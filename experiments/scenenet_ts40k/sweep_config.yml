@@ -1,0 +1,150 @@
+# Description: config file for scenenet_ts40k experiment
+# Author: Diogo Mateus
+program: main.py
+method: random
+metric:
+  goal: maximize
+  name: val_FBetaScore 
+project: 'scenenet_ts40k'
+command:
+  #- ${env}
+  - python3
+  - ${program}
+  - "--wandb_sweep"
+  #- ${args}
+parameters:
+  # ------------------ #
+  # dataset config
+  # ------------------ #
+  dataset:
+    value: 'ts40k'
+  preprocessed:
+    value: True
+    description: 'If True, uses the preprocessed the dataset'
+  load_into_memory:
+    value: False
+  data_path:
+    value: ''
+  num_classes:
+    value: 6
+  # num_data_channels:
+  #   value: 0
+    # description: 'Number of channels in the dataset'
+  voxel_grid_size:
+    value: (64, 64, 64)
+  voxel_size:
+    value: None
+  batch_size:
+    value: 16
+  ignore_index:
+    value: 0 # noise
+  num_workers: 
+    value: 0
+  val_split:
+    value: 0.1
+  test_split:
+    value: 0.3
+  fps_points:
+    value: 10000
+  min_points:
+    value: null
+    description: 'Number of points to sample from the point cloud with farthest point sampling'
+  # ------------------ #
+  # model config
+  # ------------------ #
+  model:
+    value: 'scenenet'
+  cylinder_geneo:
+    value: 15
+  arrow_geneo:
+    value: 15
+  neg_sphere_geneo:
+    value: 10
+  disk_geneo:
+    value: 5
+  cone_geneo:
+    value: 10
+  ellipsoid_geneo:
+    value: 10
+  num_observers:
+    value: 10
+  kernel_size:
+    value: (7, 7, 7)
+  hidden_dims:
+    value: "[256, 256, 128, 64, 64, 32]"
+  # ------------------ #
+  # training config
+  # ------------------ #
+  optimizer:
+    value: 'adam' #'adam' 
+  learning_rate:
+    value: 0.0001
+  max_epochs:
+    value: 200 # -1 for infinite
+  accelerator:
+    value: 'gpu' # 'ddp' or 'dp'
+  devices:
+    value: -1 # -1 for all available gpus
+  num_nodes:
+    value: 1
+  strategy:
+    value: 'auto' # 'ddp'
+  early_stop_metric:
+    value: 'val_MulticlassJaccardIndex'
+  # ------------------ #
+  #criterion config
+  # ------------------ #
+  criterion:
+    value: 'cross_entropy'
+  geneo_criterion:
+    value: True
+    description: 'If True, uses the geneo wrapper criterion, otherwise uses the standard criterion'
+  class_weights:
+    value: True
+    description: 'Use class weights in the loss function'
+  convex_weight:
+    value: 0.1
+  # tversky_alpha:
+  #   value: 1
+  # tversky_beta:
+  #   value: 1
+  # tversky_smooth:
+  #   value: 1.0e-6
+  # focal_gamma:
+  #   value: 1
+  # ------------------ #
+  # Lit Trainer config
+  # ------------------ #
+  fast_dev_run:
+    value: True
+  precision: # 16 or 32 FPU precision
+    value: 32
+    description: 'FPU precision'
+  auto_lr_find:
+    value: False
+  auto_scale_batch_size:
+    value: False
+  profiler:
+    value: False
+    description: 'PyTorch Lightning profiler'
+  accumulate_grad_batches:
+    value: 1
+    description: 'Accumulate gradients on k batches before performing a backward pass'
+  save_onnx:
+    value: False
+    description: 'Save model in onnx format'
+  # ------------------ #
+  # Checkpoint config
+  # ------------------ #
+  resume_from_checkpoint:
+    value: False
+  checkpoint_dir:
+    value: '${experiment_path}/best_model/checkpoints'
+  resume_checkpoint_name:
+    value: MulticlassJaccardIndex # 'FbetaScore', 'train_loss', last, 'best', 'F1Score'
+  checkpoint_every_n_epochs: # This parameter and the next one are mutually exclusive
+    value: 1 # every n epochs
+  checkpoint_every_n_steps:
+    value: 0 # every n steps
+    
+    
